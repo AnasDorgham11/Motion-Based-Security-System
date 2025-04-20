@@ -1,0 +1,111 @@
+/*
+ * main.c
+ *
+ *  Created on: Sep 10, 2024
+ *      Authors: Anas Dorgham
+ */
+
+#include "../LIB/STD_TYPES.h"
+#include "../LIB/BIT_MATH.h"
+#include "../HAL/LCD/LCD.h"
+#include "../MCAL/DIO/DIO.h"
+#include "../HAL/KEYPAD/KEYPAD.h"
+#include "../MCAL/TIMER/TIMER.h"
+#include "../MCAL/INTERRUPT/INTERRUPT.h"
+#include "../HAL/ULTRASONIC/ULTRASONIC.h"
+#include "../HAL/SERVO/SERVO.h"
+#include "../HAL/CAR/_2_WHEELS/MOVEMENT/MOVEMENT.h"
+#include "../MCAL/SPI/SPI.h"
+#include "../HAL/NRF24L01/NRF24L01.h"
+#include <util/delay.h>
+
+
+#define PIR_PORT		PORT_D
+#define PIR_PIN			PIN_0
+
+#define LED_PORT		PORT_D
+#define LED_PIN			PIN_1
+
+#define NO_MOTION		0
+#define MOTION			1
+
+u8_t motion_state = NO_MOTION;
+
+
+u8_t tx_data[32] = "Hello from ATmega32!";  // Data to send
+
+int main(){
+	LCD_Init(_4bits);
+	Keypad_Init();
+	while(1){
+		char x = KPD_GETPressedKey();
+		if (x != KPD_NOT_PRESSED_KEY) {         // Only act if a key is pressed
+			LCD_SendChar(x);     // Display the pressed key on the LCD
+		}
+	}
+
+	//	DIO_SetPinDirection(PIR_PORT, PIR_PIN, PIN_INPUT);
+	//	//DIO_EnablePinPullup(PIR_PORT, PIR_PIN);
+	//
+	//	DIO_SetPinDirection(LED_PORT, LED_PIN, PIN_OUTPUT);
+	//
+	//	while(1){
+	//		if (DIO_GetPinValue(PIR_PORT, PIR_PIN) == PIN_LOW){
+	//			if (motion_state == MOTION){
+	//				DIO_SetPinValue(LED_PORT, LED_PIN, PIN_LOW);
+	//				LCD_Clear();
+	//				_delay_ms(200);
+	//				LCD_SendString("No Motion");
+	//				motion_state = NO_MOTION;
+	//			}
+	//
+	//		}
+	//
+	//		else{
+	//			if (motion_state == NO_MOTION){
+	//				DIO_SetPinValue(LED_PORT, LED_PIN, PIN_HIGH);
+	//				LCD_Clear();
+	//				_delay_ms(200);
+	//				LCD_SendString("Motion Detected!");
+	//				motion_state = MOTION;
+	//			}
+	//
+	//		}
+	//		_delay_ms(50);
+	//	}
+
+	// Initialize SPI as Master
+	SPI_Init(MASTER);
+
+	while(1){
+		SPI_Transmit('H');
+		_delay_ms(1000);
+	}
+
+
+	// Initialize nRF24L01 in TX mode
+	NRF24L01_Init_Transmit();
+
+
+	// Select CE pin for nRF24L01
+	NRF24L01_CE_SelectPin(PORT_C, PIN_7);
+	LCD_Clear();
+	LCD_SendString("Ji");
+	while (1) {
+		// Enable the CE pin to start transmission
+		NRF24L01_CE(1);
+
+		// Transmit data
+		NRF24L01_TransmitData(tx_data, sizeof(tx_data));  // Send data
+
+		// Disable the CE pin to stop transmission
+		NRF24L01_CE(0);
+
+		// Wait for a moment before sending again (if needed)
+		_delay_ms(1000);  // Adjust delay as necessary
+	}
+
+
+
+
+}
