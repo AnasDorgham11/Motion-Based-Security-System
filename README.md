@@ -1,4 +1,4 @@
-# Motion Based Security System
+# Motion-Based Security System
 Motion-Based Security System (ATmega32A)
 
 
