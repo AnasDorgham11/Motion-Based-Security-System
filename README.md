@@ -36,7 +36,6 @@ The Motion-Based Security System is designed to detect and log motion events usi
 ### Motion Detection
 - When either PIR sensor detects motion:
   - Microcontroller activates blinking LED (visual alert)
-  - Current time is recorded and stored in EEPROM
 
 ### Data Retrieval
 - Pressing the button triggers:
