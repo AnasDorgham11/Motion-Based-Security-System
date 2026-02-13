@@ -25,10 +25,7 @@ The Motion-Based Security System is designed to detect and log motion events usi
      - Number of motion detections
      - Time each detection occurred
 
-5. **EEPROM Memory**
-   - Stores the time of each motion detection (persistent storage survives power loss)
-
-6. **ATmega32A Microcontroller**
+5. **ATmega32A Microcontroller**
    - System's central processing unit that:
      - Handles sensor inputs
      - Manages data storage
